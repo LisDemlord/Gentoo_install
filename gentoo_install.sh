@@ -22,3 +22,20 @@ date
 
 wget https://distfiles.gentoo.org/releases/amd64/autobuilds/20240317T170433Z/stage3-amd64-systemd-mergedusr-20240317T170433Z.tar.xz
 tar xpvf stage3-*.tar.xz --xattrs-include='*.*' --numeric-owner
+
+echo -ne "COMMON_FLAGS=\"-O2 -march=znver2 -pipe\"\nCFLAGS=\"\${COMMON_FLAGS}\"\nCXXFLAGS=\"\${COMMON_FLAGS}\"\nMAKEOPTS=\"-j3 -l3\"\nACCEPT_LICENSE=\"*\"\n" > /etc/portage/make.conf
+
+cp --dereference /etc/resolv.conf /mnt/gentoo/etc/
+
+mount --types proc /proc /mnt/gentoo/proc
+mount --rbind /sys /mnt/gentoo/sys
+mount --make-rslave /mnt/gentoo/sys
+mount --rbind /dev /mnt/gentoo/dev
+mount --make-rslave /mnt/gentoo/dev
+mount --bind /run /mnt/gentoo/run
+mount --make-slave /mnt/gentoo/run
+
+chroot /mnt/gentoo /bin/bash << 'EOF'
+source /etc/profile
+export PS1="(chroot) ${PS1}"
+EOF
