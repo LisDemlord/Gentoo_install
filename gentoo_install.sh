@@ -6,7 +6,7 @@ set -o pipefail
 
 # Проверка наличия необходимых утилит
 check_dependencies() {
-    local dependencies=("sfdisk" "wget" "tar" "mkfs.vfat" "mkfs.ext4" "mkswap" "swapon" "gcc")
+    local dependencies=("sfdisk" "wget" "tar" "mkfs.vfat" "mkfs.ext4" "mkswap" "swapon")
     for dep in "${dependencies[@]}"; do
         if ! command -v "$dep" >/dev/null 2>&1; then
             echo "Error: $dep is not installed or not in PATH"
@@ -74,7 +74,7 @@ mount_partitions() {
 # Установка make.conf
 setup_make_conf() {
     echo "Setting up make.conf..."
-    echo -ne "COMMON_FLAGS=\"-O2 -march=znver3 -pipe\"\nCFLAGS=\"\${COMMON_FLAGS}\"\nCXXFLAGS=\"\${COMMON_FLAGS}\"\nMAKEOPTS=\"-j3 -l3\"\nACCEPT_LICENSE=\"*\"\n" > /mnt/gentoo/etc/portage/make.conf
+    mkdir -p /mnt/gentoo/etc/portage && echo -ne "COMMON_FLAGS=\"-O2 -march=znver3 -pipe\"\nCFLAGS=\"\${COMMON_FLAGS}\"\nCXXFLAGS=\"\${COMMON_FLAGS}\"\nMAKEOPTS=\"-j3 -l3\"\nACCEPT_LICENSE=\"*\"\n" > /mnt/gentoo/etc/portage/make.conf && echo "The installation of make.conf is complete..."
 }
 
 # Монтирование файловых систем для chroot
