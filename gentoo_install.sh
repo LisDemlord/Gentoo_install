@@ -6,8 +6,8 @@ set -o pipefail
 
 # Проверка наличия необходимых утилит
 check_dependencies() {
-    local dependencies=("sfdisk" "wget" "tar" "mkfs.vfat" "mkfs.ext4" "mkswap" "swapon")
-    for dep in "${dependencies[@]}"; do
+    local dependencies='sfdisk wget tar mkfs.vfat mkfs.ext4 mkswap swapon'
+    for dep in $dependencies; do
         if ! command -v "$dep" >/dev/null 2>&1; then
             echo "Error: $dep is not installed or not in PATH"
             exit 1
