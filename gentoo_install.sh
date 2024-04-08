@@ -6,7 +6,7 @@ set -o pipefail
 
 # Проверка наличия необходимых утилит
 check_dependencies() {
-    local dependencies=("sfdisk" "wget" "tar" "mkfs.vfat" "mkfs.ext4" "mkswap" "swapon")
+    local dependencies=("sfdisk" "wget" "tar" "mkfs.vfat" "mkfs.ext4" "mkswap" "swapon" "gcc")
     for dep in "${dependencies[@]}"; do
         if ! command -v "$dep" >/dev/null 2>&1; then
             echo "Error: $dep is not installed or not in PATH"
@@ -35,9 +35,21 @@ mount_check() {
 
 # Создание разделов на диске
 create_partitions() {
+    # Check for existing partitions
+    if [ "$(lsblk /dev/vda | grep -c vda1)" -ne 0 ]; then
+        read -p "There are already partitions on the disk. Should I continue executing the script? (yes/no): " choice
+        case "$choice" in
+            yes|Yes) ;;
+            *) echo "The installation has been canceled..."; exit 1;;
+        esac
+    fi
+    
+    # Create partitions
     echo "Mounting partitions..."
-    echo -ne "label:gpt\nsize=2GiB,type=\"EFI System\"\nsize=12GiB,type=\"Linux swap\"\nsize=+,type=\"Linux root(x86-64)\"\n" | sfdisk /dev/vda
+    echo -ne "label:gpt\nsize=2GiB,type=\"EFI System\"\nsize=12GiB,type=\"Linux swap\"\nsize=+,type=\"Linux root(x86-64)\"\n" | sfdisk /dev/vda && echo "Partitions created successfully."
 }
+
+
 
 # Форматирование разделов
 format_partitions() {
