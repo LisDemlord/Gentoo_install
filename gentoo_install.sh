@@ -37,7 +37,7 @@ mount_check() {
 create_partitions() {
     # Check for existing partitions
     if [ "$(lsblk /dev/vda | grep -c vda1)" -ne 0 ]; then
-        read -p "There are already partitions on the disk. Should I continue executing the script? (yes/no): " choice
+        read -pr "There are already partitions on the disk. Should I continue executing the script? (yes/no): " choice
         case "$choice" in
             yes|Yes) ;;
             *) echo "The installation has been canceled..."; exit 1;;
@@ -54,10 +54,10 @@ create_partitions() {
 # Форматирование разделов
 format_partitions() {
     echo "Making filesystems... formatting partitions"
-    mkfs.vfat -F 32 /dev/vda1
-    mkfs.ext4 /dev/vda3
-    mkswap /dev/vda2
-    swapon /dev/vda2
+    mkfs.vfat -F 32 /dev/vda1 || { echo "ERROR! The command \"mkfs.vfat -F 32 /dev/vda1\" failed..."; exit 1; }
+    mkfs.ext4 /dev/vda3 || { echo "ERROR! The command \"mkfs.ext4 /dev/vda3\" failed..."; exit 1; }
+    mkswap /dev/vda2 || { echo "ERROR! The command \"mkswap /dev/vda2\" failed..."; exit 1; }
+    swapon /dev/vda2 || { echo "ERROR! The command \"swapon /dev/vda2\" failed..."; exit 1; }
 }
 
 # Создание и монтирование точек монтирования
