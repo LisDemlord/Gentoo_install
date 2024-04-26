@@ -7,12 +7,18 @@ set -o pipefail
 # Проверка наличия необходимых утилит
 check_dependencies() {
     local dependencies='sfdisk wget tar mkfs.vfat mkfs.ext4 mkswap swapon'
+    local missing_dependencies=""
+    
     for dep in $dependencies; do
         if ! command -v "$dep" >/dev/null 2>&1; then
-            echo "Error: $dep is not installed or not in PATH"
-            exit 1
+            missing_dependencies+=" $dep"
         fi
     done
+    
+    if [ -n "$missing_dependencies" ]; then
+        echo "ERROR: The following dependencies are missing or not in PATH:$missing_dependencies"
+        exit 1
+    fi
 }
 
 # Проверка доступности URL для загрузки
